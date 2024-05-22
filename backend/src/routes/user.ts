@@ -18,9 +18,9 @@ userRoute.post('/signup', async (c) => {
 
     const body = await c.req.json();
     const input = signUpInput.safeParse(body);
-    if(!input){
+    if (!input) {
         c.status(403)
-        return c.json({msg:"Invalid Input"})
+        return c.json({ msg: "Invalid Input" })
     }
     try {
         const user = await prisma.user.create({
@@ -44,9 +44,9 @@ userRoute.post('/signin', async (c) => {
     }).$extends(withAccelerate());
     const body = await c.req.json();
     const input = signInInput.safeParse(body);
-    if(!input){
+    if (!input) {
         c.status(403)
-        return c.json({msg:"Invalid Input"})
+        return c.json({ msg: "Invalid Input" })
     }
     try {
         const user = await prisma.user.findUnique({
