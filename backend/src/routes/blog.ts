@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { verify } from "hono/jwt";
-import { creatingBlog, updatingBlog } from "@11-devvv/medium-common";
+import { createBlogInput, updateBlogInput } from "@11-devvv/medium-common";
 export const blogRoute = new Hono<{
     Bindings: {
         DATABASE_URL: string;
@@ -31,8 +31,8 @@ blogRoute.post('/', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    const input = creatingBlog.safeParse(body);
-    if (!input) {
+    const input = createBlogInput.safeParse(body);
+    if (!input.success) {
         c.status(403)
         return c.json({ msg: "Invalid Input" })
     }
@@ -44,7 +44,7 @@ blogRoute.post('/', async (c) => {
             authorId: id //from middleware
         }
     })
-    return c.json({ msg: `Blog Created with id :${blog.id}` })
+    return c.json({ id: blog.id })
 })
 
 blogRoute.put('/', async (c) => {
@@ -53,8 +53,8 @@ blogRoute.put('/', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    const input = updatingBlog.safeParse(body);
-    if (!input) {
+    const { success } = updateBlogInput.safeParse(body);
+    if (!success) {
         c.status(403)
         return c.json({ msg: "Invalid Input" })
     }
@@ -67,7 +67,7 @@ blogRoute.put('/', async (c) => {
             content: body.content,
         }
     })
-    return c.json({ msg: `Blog ${blog.id} Updated!!` })
+    return c.json({ id: blog.id })
 })
 
 //add pagination
@@ -76,7 +76,18 @@ blogRoute.get('/all', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    const blogs = await prisma.blog.findMany();
+    const blogs = await prisma.blog.findMany({
+        select: {
+            content: true,
+            title: true,
+            id: true,
+            author: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    });
     return c.json({ blogs })
 })
 
@@ -85,10 +96,27 @@ blogRoute.get('/:id', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
     const id = c.req.param("id");
-    const blog = await prisma.blog.findUnique({
-        where: { id }
-    })
-    return c.json({ blog })
+    try {
+        const blog = await prisma.blog.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                author: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+        return c.json({ blog })
+    } catch (e) {
+        c.status(411);
+        return c.json({
+            message: "Error while fetching blog post"
+        });
+    }
 })
 
 

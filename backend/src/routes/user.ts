@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign } from 'hono/jwt'
-import { signInInput, signUpInput } from "@11-devvv/medium-common";
+import { signinInput, signupInput } from "@11-devvv/medium-common";
 
 export const userRoute = new Hono<{
     Bindings: {
@@ -17,24 +17,27 @@ userRoute.post('/signup', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
-    const input = signUpInput.safeParse(body);
-    if (!input) {
-        c.status(403)
+    const input = signupInput.safeParse(body);
+    console.log(input);
+    if (!input.success) {
+        c.status(411)
         return c.json({ msg: "Invalid Input" })
     }
     try {
         const user = await prisma.user.create({
             data: {
+                name: body.name,
                 email: body.email,
                 password: body.password
             }
         })
         const token = await sign({ id: user.id }, c.env.JWT_KEY)
-        return c.json({ token });
+        return c.text(token);
     }
     catch (e) {
-        c.status(403);
-        return c.text("Invalid")
+        c.status(411);
+        console.log(e)
+        return c.text("Error")
     }
 })
 
@@ -43,8 +46,8 @@ userRoute.post('/signin', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
     const body = await c.req.json();
-    const input = signInInput.safeParse(body);
-    if (!input) {
+    const { success } = signinInput.safeParse(body);
+    if (!success) {
         c.status(403)
         return c.json({ msg: "Invalid Input" })
     }
@@ -60,7 +63,7 @@ userRoute.post('/signin', async (c) => {
             return c.text('User Not Found');
         }
         const token = await sign({ id: user.id }, c.env.JWT_KEY);
-        return c.json({ token });
+        return c.text(token);
     }
     catch (e) {
         c.status(411);
