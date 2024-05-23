@@ -17,6 +17,7 @@ export const Form = ({ type }: { type: "signup" | "signin" }) => {
             const resp = await axios.post(`${BACKEND_URL}/api/v1/user/${type}`, userInputs);
             const token = resp.data;
             localStorage.setItem('token', token);
+            localStorage.setItem('loginname',userInputs.name||"Anonymous")
             navigate('/blogs');
         }
         catch (e) {
