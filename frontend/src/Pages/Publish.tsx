@@ -3,6 +3,9 @@ import { Appbar } from "../Components/Appbar";
 import { useNavigate } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
 import { BACKEND_URL } from "../config";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"
+import "./styleforQuill.scss"
 
 export const Publish = () => {
     const [title, setTitle] = useState("");
@@ -12,14 +15,13 @@ export const Publish = () => {
     return <div>
         <Appbar />
         <div className="flex justify-center w-full pt-8">
-            <div className="max-w-screen-lg w-full">
+            <div className="max-w-screen-lg w-full ">
                 <input onChange={(e) => {
                     setTitle(e.target.value)
                 }} type="text" className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Title" />
-
-                <TextEditor onChange={(e) => {
-                    setContent(e.target.value)
-                }} />
+                <div className="mt-2">
+                    <ReactQuill theme="snow" onChange={setContent} value={content} />
+                </div>
                 <button onClick={async () => {
                     const response = await axios.post(`${BACKEND_URL}/api/v1/blog`, {
                         title,
@@ -36,18 +38,4 @@ export const Publish = () => {
             </div>
         </div>
     </div>
-}
-
-function TextEditor({ onChange }: { onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void }) {
-    return <div className="mt-2">
-        <div className="w-full mb-4 ">
-            <div className="flex items-center justify-between border">
-                <div className="my-2 bg-white rounded-b-lg w-full">
-                    <label className="sr-only">Publish post</label>
-                    <textarea onChange={onChange} id="editor" rows={8} className="focus:outline-none block w-full px-0 text-sm text-gray-800 bg-white border-0 pl-2" placeholder="Write an article..." required />
-                </div>
-            </div>
-        </div>
-    </div>
-
 }
