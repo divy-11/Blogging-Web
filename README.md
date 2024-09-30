@@ -12,10 +12,6 @@ A modern web application for writers to publish and share articles, designed wit
 - **Optimized Performance**: Backend built with TypeScript and PostgreSQL, improving query response times by 40%.
 - **Responsive Design**: Seamless experience across devices, boosting user engagement by 20% with a well-designed, responsive UI.
 
-## Performance Metrics
-- **Backend Query Speed**: Query response time reduced by 40% through efficient use of Prisma and PostgreSQL.
-- **User Engagement**: 25% increase in user interactions and a 20% boost in engagement across multiple devices.
-
 ## Installation
 
 1. Clone the repository:
