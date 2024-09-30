@@ -17,13 +17,13 @@ A modern web application for writers to publish and share articles, designed wit
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/medium-blogging-website.git
+    git clone https://github.com/divy-11/Blogging-Web.git
     ```
 
 2. Navigate to the frontend directory and install dependencies:
 
     ```bash
-    cd medium-blogging-website/frontend
+    cd Blogging-Web/frontend
     npm install
     ```
 
