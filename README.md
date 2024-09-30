@@ -1,4 +1,4 @@
-# Medium-Blogging Website
+# Blogging Website
 
 A modern web application for writers to publish and share articles, designed with a focus on performance and user engagement. Built with React, TypeScript, PostgreSQL, Prisma, and Hono for a secure and scalable backend, and a responsive front-end using Tailwind CSS.
 
